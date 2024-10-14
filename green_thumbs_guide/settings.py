@@ -74,10 +74,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'green_thumbs_guide.wsgi.application'
 
 # Database configuration using dj_database_url
-import dj_database_url
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://shane:greenthumbs@localhost:5432/green_thumbs_guide',
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600,
     )
 }
