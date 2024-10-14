@@ -77,12 +77,16 @@ WSGI_APPLICATION = 'green_thumbs_guide.wsgi.application'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', 'postgresql://green_thumb_db_user:Xno6ElnSlcI8Byj7q2VMuhh31aSMBDbC@dpg-cs6p7l23esus73b6o10g-a.frankfurt-postgres.render.com/green_thumb_db'),
-        conn_max_age=600,  
-        ssl_require=True,  
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'green_thumb_db',  # Your database name
+        'USER': 'green_thumb_db_user',  # Your database username
+        'PASSWORD': 'Xno6ElnSlcI8Byj7q2VMuhh31aSMBDbC',  # Your database password
+        'HOST': 'dpg-cs6p7l23esus73b6o10g-a.frankfurt-postgres.render.com',  # Your database host
+        'PORT': '5432',  # Port for PostgreSQL
+    }
 }
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
