@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ plant.name }} - Plant Details{% endblock %}
+
+{% block content %}
+<div class="plant-detail">
+    <h1>{{ plant.name }}</h1>
+    <h2 class="text-muted">{{ plant.scientific_name }}</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            {% if plant.image %}
+            <img src="{{ plant.image.url }}" alt="{{ plant.name }}" class="img-fluid rounded">
+            {% else %}
+            <img src="{% static 'images/default_plant.png' %}" alt="{{ plant.name }}" class="img-fluid rounded">
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h3>Quick Facts</h3>
+            <ul>
+                <li><strong>Sunlight Needs:</strong> {{ plant.sunlight_requirements }}</li>
+                <li><strong>Watering Frequency:</strong> Every {{ plant.watering_frequency }} days</li>
+                <li><strong>Ideal Temperature:</strong> {{ plant.ideal_temperature_min }}°C - {{
+                    plant.ideal_temperature_max }}°C</li>
+                <li><strong>Difficulty Level:</strong> {{ plant.get_difficulty_display }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Description</h3>
+    <p>{{ plant.description }}</p>
+
+    <h3>Care Instructions</h3>
+    <p>{{ plant.care_instructions }}</p>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-3">
+        <div class="profile-section">
+            <h2 class="profile-username">{{ user.username }}</h2>
+            <p>{{ user.email }}</p>
+            <p>Joined: {{ user.date_joined|date:"F d, Y" }}</p>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <h3 class="section-header">Plants in My Garden</h3>
+        <div class="row">
+            {% for plant in garden_plants %}
+            <div class="col-md-4 mb-4">
+                <div class="card plant-card">
+                    <img src="{{ plant.plant.image.url }}" class="card-img-top" alt="{{ plant.plant.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ plant.plant.name }}</h5>
+                        <p class="card-text">Planted: {{ plant.planted_date|date:"F d, Y" }}</p>
+                        <p class="card-text">Next watering: {{ plant.next_watering_date|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-12">No plants in your garden yet. <a href="{% url 'core:add_plant' %}" class="btn btn-primary">Add a plant</a></p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

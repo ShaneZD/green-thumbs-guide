@@ -1,0 +1,56 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Plant Database - Green Thumbs Guide{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Plant Database</h1>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form method="get" action="{% url 'core:plant_database' %}" class="form-inline">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search plants..." value="{{ query|default:'' }}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 text-right">
+        <div class="btn-group" role="group" aria-label="Sort options">
+            <a href="?sort=name{% if query %}&q={{ query }}{% endif %}" class="btn btn-outline-secondary {% if current_sort == 'name' %}active{% endif %}">Name</a>
+            <a href="?sort=watering{% if query %}&q={{ query }}{% endif %}" class="btn btn-outline-secondary {% if current_sort == 'watering' %}active{% endif %}">Watering Frequency</a>
+            <a href="?sort=difficulty{% if query %}&q={{ query }}{% endif %}" class="btn btn-outline-secondary {% if current_sort == 'difficulty' %}active{% endif %}">Difficulty</a>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for plant in plants %}
+    <div class="col">
+        <div class="card h-100">
+            {% if plant.image %}
+                <img src="{{ plant.image.url }}" class="card-img-top" alt="{{ plant.name }}">
+            {% else %}
+                <img src="{% static 'images/default_plant.png' %}" class="card-img-top" alt="Default plant image">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ plant.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ plant.scientific_name }}</h6>
+                <p class="card-text">{{ plant.description|truncatewords:20 }}</p>
+                <p class="card-text"><small class="text-muted">Watering: Every {{ plant.watering_frequency }} days</small></p>
+                <p class="card-text"><small class="text-muted">Difficulty: {{ plant.get_difficulty_display }}</small></p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'core:plant_detail' plant.id %}" class="btn btn-primary">Learn More</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>No plants found matching your search.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

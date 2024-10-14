@@ -1,0 +1,161 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}
+Green Thumbs Guide - Home
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- Weather widget to display current weather data -->
+        <div id="weather-widget" class="weather-widget">
+            <h2>Weather</h2>
+            <p>Loading weather data...</p>
+        </div>
+
+        <!-- Display Plant of the Month if available -->
+        {% if plant_of_month %}
+        <div class="section">
+            <h2 class="section-header">Plant of the Month</h2>
+            <div class="card">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="{{ plant_of_month.image.url }}" class="img-fluid rounded-start" alt="{{ plant_of_month.name }}">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ plant_of_month.name }}</h3>
+                            <p>Best planting season: {{ plant_of_month.get_best_planting_season_display }}</p>
+                            <p>{{ plant_of_month.description|truncatewords:50 }}</p>
+                            <a href="{% url 'core:plant_detail' plant_of_month.id %}" class="btn btn-primary">Learn more</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Display Gardening Tip of the Month if available -->
+        {% if monthly_tip %}
+        <div class="section">
+            <h2 class="section-header">Gardening Tip of the Month</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>{{ monthly_tip.content }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <!-- Quick Links for easy navigation -->
+        <div class="section">
+            <h2 class="section-header">Quick Links</h2>
+            <div class="list-group">
+                <a href="{% url 'core:plant_database' %}" class="list-group-item list-group-item-action">Plant Database</a>
+                <a href="{% url 'core:my_garden' %}" class="list-group-item list-group-item-action">My Garden</a>
+                <a href="{% url 'forum:forum_home' %}" class="list-group-item list-group-item-action">Gardeners' Forum</a>
+            </div>
+        </div>
+
+        <!-- Display unread notifications if any -->
+        {% if notifications %}
+        <div class="section">
+            <h2 class="section-header">Notifications</h2>
+            <ul class="list-group">
+                {% for notification in notifications %}
+                <li class="list-group-item">{{ notification.message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Recent posts from the forum -->
+        <div class="section">
+            <h2 class="section-header">Recent Posts</h2>
+            <ul class="list-group">
+                {% for post in recent_posts %}
+                <li class="list-group-item">
+                    <a href="{% url 'forum:post_detail' post.id %}">{{ post.title }}</a>
+                </li>
+                {% empty %}
+                <li class="list-group-item">No recent posts.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Recommended plants for the current season -->
+<div class="section">
+    <h2 class="section-header">Recommended Plants for {{ current_season|title }}</h2>
+    <div class="row">
+        {% for plant in seasonal_plants %}
+        <div class="col-md-4 mb-3">
+            <div class="card plant-card">
+                <img src="{{ plant.image.url }}" class="card-img-top" alt="{{ plant.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ plant.name }}</h5>
+                    <p>Best season: {{ plant.get_best_planting_season_display }}</p>
+                    <a href="{% url 'core:plant_detail' plant.id %}" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="col-12">No plant recommendations for this season.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function getWeather() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+
+                    fetch(`/get-weather-by-coords/?lat=${lat}&lon=${lon}&_=${new Date().getTime()}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                throw new Error(data.error);
+                            }
+                            updateWeatherWidget(data);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            var weatherWidget = document.getElementById('weather-widget');
+                            weatherWidget.innerHTML = '<p>Failed to load weather data. Please refresh the page and try again.</p>';
+                        });
+                }, function(error) {
+                    console.error("Geolocation error:", error);
+                    var weatherWidget = document.getElementById('weather-widget');
+                    weatherWidget.innerHTML = '<p>Unable to get your location. Please enable location services and refresh the page.</p>';
+                });
+            } else {
+                var weatherWidget = document.getElementById('weather-widget');
+                weatherWidget.innerHTML = '<p>Geolocation is not supported by your browser.</p>';
+            }
+        }
+
+        function updateWeatherWidget(data) {
+            var weatherWidget = document.getElementById('weather-widget');
+            weatherWidget.innerHTML = `
+                <h2>Weather in ${data.city}</h2>
+                <p>Temperature: ${data.temperature}°C</p>
+                <p>Condition: ${data.description}</p>
+                <p>Humidity: ${data.humidity}%</p>
+                <p>Wind Speed: ${data.wind_speed} m/s</p>
+            `;
+        }
+
+        // Call the function to get and display weather data
+        getWeather();
+    });
+</script>
+{% endblock %}

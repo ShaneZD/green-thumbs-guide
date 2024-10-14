@@ -1,0 +1,38 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container">
+    <h1 id="post.title" class="my-4">{{ post.title }}</h1>
+
+    <p>Posted by {{ post.author.username }} on {{ post.created_at|date:"F d, Y" }}</p>
+
+    <div class="card">
+        <div class="card-body">
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid mb-3">
+            {% endif %}
+            {{ post.content|linebreaks }}
+        </div>
+    </div>
+
+    <h2 class="mt-4">Comments</h2>
+    {% for comment in comments %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <p>{{ comment.content }}</p>
+                <small>By {{ comment.author }} on {{ comment.created_at|date:"F d, Y" }}</small>
+            </div>
+        </div>
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+
+    <h3 class="mt-4">Add a comment</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Comment</button>
+    </form>
+
+    <a href="{% url 'forum:forum_home' %}" class="btn btn-secondary mt-3">Back to Forum</a>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Update Care for {{ plant.plant.name }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Update Care</button>
+</form>
+<a href="{% url 'core:my_garden' %}" class="btn btn-secondary">Back to My Garden</a>
+{% endblock %}

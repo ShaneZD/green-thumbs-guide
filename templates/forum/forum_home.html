@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container">
+    <h1 id="gardeners-forum" class="my-4">Gardeners' Forum</h1>
+
+    <a href="{% url 'forum:create_post' %}" class="btn btn-primary mb-4">Create New Post</a>
+
+    <form class="input-group mb-3" method="get">
+        <input type="text" class="form-control" placeholder="Search posts" name="q" value="{{ query|default_if_none:'' }}">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </div>
+    </form>
+
+    <div class="list-group">
+        {% for post in posts %}
+            <a href="{% url 'forum:post_detail' post.id %}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ post.title }}</h5>
+                    <small>{{ post.created_at|date:"F d, Y" }}</small>
+                </div>
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid mb-2" style="max-height: 100px;">
+                {% endif %}
+                <p class="mb-1">{{ post.content|truncatewords:30 }}</p>
+                <small>Posted by: {{ post.author.username }}</small>
+            </a>
+        {% empty %}
+            <p>No posts found. {% if query %}Try a different search term or {% endif %}be the first to start a discussion!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

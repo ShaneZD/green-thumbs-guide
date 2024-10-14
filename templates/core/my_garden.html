@@ -1,0 +1,149 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>My Garden</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>My Plants</h2>
+        {% if garden_plants %}
+        <div class="row">
+            {% for garden_plant in garden_plants %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    {% if garden_plant.plant.image %}
+                    <img src="{{ garden_plant.plant.image.url }}" class="card-img-top"
+                        alt="{{ garden_plant.plant.name }}">
+                    {% else %}
+                    <img src="{% static 'images/default_plant.png' %}" class="card-img-top" alt="Default Plant">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ garden_plant.plant.name }}</h5>
+                        <p class="card-text">Planted: {{ garden_plant.planted_date }}</p>
+
+                        <!-- Care Countdown Timer -->
+                        <p>Next watering in: <span class="care-countdown"
+                                data-target-date="{{ garden_plant.next_watering_date|date:'Y-m-d' }}"></span></p>
+
+                        <!-- Growth Progress Bar -->
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar"
+                                style="width: {{ garden_plant.growth_percentage }}%;"
+                                aria-valuenow="{{ garden_plant.growth_percentage }}" aria-valuemin="0"
+                                aria-valuemax="100">
+                                {{ garden_plant.growth_percentage }}% Grown
+                            </div>
+                        </div>
+
+                        <!-- Care Buttons -->
+                        <button class="btn btn-sm btn-primary care-button" data-plant-id="{{ garden_plant.id }}"
+                            data-care-type="water">Water</button>
+                        <button class="btn btn-sm btn-success care-button" data-plant-id="{{ garden_plant.id }}"
+                            data-care-type="fertilize">Fertilize</button>
+                        <button class="btn btn-sm btn-warning care-button" data-plant-id="{{ garden_plant.id }}"
+                            data-care-type="prune">Prune</button>
+
+                        <!-- Plant Info Button -->
+                        <button class="btn btn-sm btn-info mt-2" data-bs-toggle="modal"
+                            data-bs-target="#plantModal{{ garden_plant.id }}">Plant Info</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plant Info Modal -->
+            <div class="modal fade" id="plantModal{{ garden_plant.id }}" tabindex="-1"
+                aria-labelledby="plantModalLabel{{ garden_plant.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="plantModalLabel{{ garden_plant.id }}">{{ garden_plant.plant.name
+                                }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Scientific Name:</strong> {{ garden_plant.plant.scientific_name }}</p>
+                            <p><strong>Description:</strong> {{ garden_plant.plant.description }}</p>
+                            <p><strong>Ideal Temperature:</strong> {{ garden_plant.plant.ideal_temperature_min }}°C - {{
+                                garden_plant.plant.ideal_temperature_max }}°C</p>
+                            <p><strong>Watering Frequency:</strong> Every {{ garden_plant.plant.watering_frequency }}
+                                days</p>
+                            <p><strong>Fertilizing Frequency:</strong> Every {{ garden_plant.plant.fertilizing_frequency
+                                }} days</p>
+                            <p><strong>Sunlight Needs:</strong> {{ garden_plant.plant.sunlight_needs }}</p>
+                            <p><strong>Humidity Preference:</strong> {{ garden_plant.plant.humidity_preference }}</p>
+
+                            <h6>Care History</h6>
+                            <ul>
+                                <li>Last Watered: {% if garden_plant.last_watered %}{{ garden_plant.last_watered|date:"F
+                                    d, Y" }}{% else %}Never{% endif %}</li>
+                                <li>Last Fertilized: {% if garden_plant.last_fertilized %}{{
+                                    garden_plant.last_fertilized|date:"F d, Y" }}{% else %}Never{% endif %}</li>
+                                <li>Last Pruned: {% if garden_plant.last_pruned %}{{ garden_plant.last_pruned|date:"F d,
+                                    Y" }}{% else %}Never{% endif %}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>You haven't added any plants to your garden yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <h2>Add a New Plant</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Add Plant</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Care Button Event Listeners
+    document.querySelectorAll('.care-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const plantId = this.dataset.plantId;
+            const careType = this.dataset.careType;
+            fetch(`/care-for-plant/${plantId}/${careType}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`Plant ${careType}d successfully!`);
+                        location.reload(); // Reload to update care history
+                    } else {
+                        alert('Error caring for plant');
+                    }
+                });
+        });
+    });
+
+    // Countdown Timer
+    function updateCountdowns() {
+        document.querySelectorAll('.care-countdown').forEach(countdown => {
+            const targetDate = new Date(countdown.dataset.targetDate);
+            const now = new Date();
+            const difference = targetDate - now;
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+            countdown.textContent = `${days}d ${hours}h ${minutes}m`;
+        });
+    }
+
+    updateCountdowns();
+    setInterval(updateCountdowns, 60000); // Update every minute
+</script>
+{% endblock %}
