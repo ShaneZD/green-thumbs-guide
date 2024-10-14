@@ -78,10 +78,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=os.environ.get('DATABASE_URL', 'postgres://shane:greenthumbs@localhost:5432/green_thumbs_guide'),
         conn_max_age=600,
     )
 }
+
+
+DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
