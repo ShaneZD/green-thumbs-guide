@@ -78,10 +78,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://green_thumb_db_user:Xno6ElnSlcI8Byj7q2VMuhh31aSMBDbC@dpg-cs6p7l23esus73b6o10g-a/green_thumb_db',
+        default=os.getenv('DATABASE_URL', 'postgresql://green_thumb_db_user:Xno6ElnSlcI8Byj7q2VMuhh31aSMBDbC@dpg-cs6p7l23esus73b6o10g-a.frankfurt-postgres.render.com/green_thumb_db'),
+        conn_max_age=600,  
+        ssl_require=True,  
     )
 }
-
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
