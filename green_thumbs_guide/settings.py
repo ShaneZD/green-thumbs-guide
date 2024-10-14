@@ -127,3 +127,6 @@ LOGOUT_REDIRECT_URL = 'core:home'
 # Media files settings
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+ALLOWED_HOSTS = ['green-thumbs-guide.onrender.com', 'localhost', '127.0.0.1']
+
