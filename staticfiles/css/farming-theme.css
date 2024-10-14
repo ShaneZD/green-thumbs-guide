@@ -1,0 +1,119 @@
+:root {
+  --earth-brown: #5D4037;
+  --leaf-green: #4CAF50;
+  --sky-blue: #03A9F4;
+  --wheat-gold: #000000;
+  --off-white: #F5F5F5;
+  --text-dark: #212121;
+  --text-light: #757575;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--off-white);
+    color: var(--text-dark);
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: var(--earth-brown);
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-brand, .nav-link {
+    color: var(--off-white) !important;
+}
+
+.nav-link:hover {
+    color: var(--wheat-gold) !important;
+}
+
+/* Container Styles */
+.main-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+/* Welcome Banner */
+.welcome-banner {
+    background-color: var(--leaf-green);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Section Styles */
+.section-header {
+    color: var(--earth-brown);
+    border-bottom: 2px solid var(--wheat-gold);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.card-title {
+    color: var(--leaf-green);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: var(--leaf-green);
+    border-color: var(--leaf-green);
+}
+
+.btn-primary:hover {
+    background-color: var(--earth-brown);
+    border-color: var(--earth-brown);
+}
+
+/* Footer Styles */
+footer {
+    background-color: var(--earth-brown);
+    color: var(--off-white);
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+/* Weather Widget */
+.weather-widget {
+    background-color: var(--sky-blue);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Profile Section */
+.profile-section {
+    background-color: var(--off-white);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-username {
+    color: var(--earth-brown);
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* Plant Cards */
+.plant-card img {
+    height: 200px;
+    object-fit: cover;
+}
