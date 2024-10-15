@@ -16,9 +16,6 @@ SECRET_KEY = 'django-insecure-kc4($3u&@&f%_3$7!u-&37i+qcar_3fe%tz*#_&q==%&4c*lzz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-ALLOWED_HOSTS = []
-
 # API key for OpenWeatherMap to fetch weather data
 OPENWEATHERMAP_API_KEY = 'a070d2f102c9476238c715131a9b58a5'
 
@@ -116,6 +113,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_MANIFEST_STRICT = False
+WHITENOISE_ALLOW_ALL_ORIGINS = True
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
